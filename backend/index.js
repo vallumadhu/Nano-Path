@@ -93,6 +93,10 @@ app.post("/custom", async (req, res) => {
     return res.status(200).json(newEntry);
 })
 
+app.get("/health", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.status(200).json({ status: "ok" });
+});
 
 app.listen(PORT, () => {
     console.log(`listening to port ${PORT}`)

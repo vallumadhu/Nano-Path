@@ -4,17 +4,22 @@ import QRCode from "react-qr-code";
 function App() {
   const [url, seturl] = useState("")
   const [nanopath, setnanopath] = useState("")
-  const handleapi = () => {
-    if (!url.trim()) return
-    fetch(`https://nano-path.onrender.com/url?url=${url}`, {
-      "method": "post"
+  const [ishandling, setishandling] = useState(false)
+  const handleapi = async () => {
+    if (!url.trim()) return;
+    setishandling(true);
+    try {
+      const response = await fetch(`https://nano-path.onrender.com/url?url=${url}`, {
+        method: "POST",
+      });
+      const data = await response.json();
+      setnanopath(`https://nano-path.onrender.com/url?id=${data.id}`);
+      console.log(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setishandling(false);
     }
-    ).then((response) => response.json())
-      .then((data) => {
-        setnanopath(`https://nano-path.onrender.com/url?id=${data.id}`)
-        console.log(data)
-      })
-      .catch((e) => console.error(e))
   }
   return (
     <>
@@ -28,9 +33,18 @@ function App() {
             type="text"
             className="url-input"
             onChange={(e) => seturl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleapi()
+              }
+            }}
           />
-          <button className="generate-btn" onClick={handleapi}>
-            Get Nano Path
+          <button
+            className="generate-btn"
+            onClick={handleapi}
+            disabled={ishandling}
+          >
+            {ishandling ? "Generating..." : "Get Nano Path"}
           </button>
         </div>
         {nanopath && (
