@@ -28,7 +28,7 @@ const urlSchema = mongoose.Schema(
 
 const urlModel = mongoose.model("urlModel", urlSchema)
 app.use(cors({
-    origin: ["https://nanopath.netlify.app", "http://localhost:5173"],
+    origin: "https://nanopath.netlify.app",
     methods: ["GET", "POST"],
 }));
 

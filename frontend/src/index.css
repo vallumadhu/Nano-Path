@@ -107,6 +107,63 @@ main {
     text-transform: capitalize;
 }
 
+.sideBar {
+    position: fixed;
+    top: 110px;
+    width: 100%;
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 350ms ease-in-out;
+    display: grid;
+    overflow: hidden;
+}
+
+.sideBar nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+    transition: 300ms ease-in-out;
+}
+
+.sideBar nav a {
+    color: #cfcfcf;
+    font-size: 0.95rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.25s ease;
+}
+
+.sideBar nav a:active {
+    color: #fff;
+}
+
+.sideBarhide {
+    grid-template-rows: 0fr;
+    overflow: hidden;
+}
+
+.sideBarshow nav {
+    padding: 10px;
+}
+
+.sideBarshow {
+    grid-template-rows: 1fr;
+}
+
+.menu-btn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-size: 1.6rem;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
 .main {
     display: flex;
     flex-direction: column;
@@ -388,6 +445,18 @@ main {
     .nav-left,
     .nav-right {
         display: none;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .sideBar {
+        display: grid;
+    }
+
+    .header .nav-center {
+        width: 100%;
     }
 }
 

@@ -17,7 +17,7 @@ export default function Home() {
         }
         setishandling(true);
         try {
-            const response = await fetch(`http://localhost:3000/url?url=${url}`, {
+            const response = await fetch(`https://nano-path.onrender.com/url?url=${url}`, {
                 method: "POST",
             });
             if (response.status != 200) {
@@ -26,7 +26,7 @@ export default function Home() {
                 return
             }
             const data = await response.json();
-            setnanopath(`http://localhost:3000/url?id=${data.id}`);
+            setnanopath(`https://nano-path.onrender.com/url?id=${data.id}`);
             console.log(data);
         } catch (e) {
             console.error(e);
@@ -46,7 +46,7 @@ export default function Home() {
         }
         setishandling(true);
         try {
-            const response = await fetch(`http://localhost:3000/custom?url=${url}&id=${customid}`, {
+            const response = await fetch(`https://nano-path.onrender.com/custom?url=${url}&id=${customid}`, {
                 method: "POST",
             });
             if (response.status != 200) {
@@ -55,7 +55,7 @@ export default function Home() {
                 return
             }
             const data = await response.json();
-            setnanopath(`http://localhost:3000/url?id=${data.id}`);
+            setnanopath(`https://nano-path.onrender.com/url?id=${data.id}`);
             console.log(data);
         } catch (e) {
             console.error(e);
