@@ -1,7 +1,8 @@
 import { useState } from "react"
-import QRCode from "react-qr-code";
+import Header from "./Header";
 import AlertBox from "./alertBox";
 import Home from "./Home";
+import { Outlet } from "react-router-dom";
 
 function App() {
   const [nanopath, setnanopath] = useState("")
@@ -9,23 +10,28 @@ function App() {
   const copytoclipboard = () => {
     navigator.clipboard.writeText(nanopath)
       .then(() => {
-        const id = Date.now();
-        setalertmessages(prev => [...prev, { id: id, text: "Copied" }]);
-
-        setTimeout(() => {
-          setalertmessages(prev => prev.filter(msg => msg.id !== id));
-        }, 2800)
+        setalert("Copied")
       })
-      .catch(error => console.error("Failed to copy", error));
+      .catch(error => {
+        setalert("Failed to copy", "bad")
+        console.error("Failed to copy", error)
+      });
   };
+
+  const setalert = (message, type = "good") => {
+    const id = Date.now();
+    setalertmessages(prev => [...prev, { id: id, text: message, type: type }]);
+
+    setTimeout(() => {
+      setalertmessages(prev => prev.filter(msg => msg.id !== id));
+    }, 2800)
+  }
+
   return (
     <>
-      <header className="header">
-        <h1 className="title">Nano Path</h1>
-        <p>your favorite url shortener</p>
-      </header>
+      <Header />
       <main className="main">
-        <Home copytoclipboard={copytoclipboard} setnanopath={setnanopath} nanopath={nanopath} />
+        <Outlet context={{ nanopath, setnanopath, copytoclipboard, setalert }} />
         <AlertBox alertmessages={alertmessages} />
       </main>
     </>

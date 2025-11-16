@@ -1,19 +1,30 @@
 import { useState } from "react"
 import QRCode from "react-qr-code";
+import InputBox from "./InputBox";
+import CustomInputBox from "./CustomInputBox"
+import { useOutletContext, Outlet } from "react-router-dom";
 
-export default function Home({ copytoclipboard, setnanopath, nanopath }) {
+export default function Home() {
+    const { nanopath, setnanopath, copytoclipboard, setalert } = useOutletContext()
     const [url, seturl] = useState("")
+    const [customid, setcustomid] = useState("")
     const [ishandling, setishandling] = useState(false)
-    const [alertmessages, setalertmessages] = useState([])
-
 
     const handleapi = async () => {
-        if (!url.trim()) return;
+        if (!url.trim() || url.includes(" ")) {
+            setalert("Enter URL")
+            return
+        }
         setishandling(true);
         try {
             const response = await fetch(`http://localhost:3000/url?url=${url}`, {
                 method: "POST",
             });
+            if (response.status != 200) {
+                console.error("Bad request");
+                setalert("Something went wrong", "bad")
+                return
+            }
             const data = await response.json();
             setnanopath(`http://localhost:3000/url?id=${data.id}`);
             console.log(data);
@@ -23,27 +34,40 @@ export default function Home({ copytoclipboard, setnanopath, nanopath }) {
             setishandling(false);
         }
     }
+
+    const customidhandleapi = async () => {
+        if (!customid.trim() || customid.includes(" ")) {
+            setalert("Enter ID", "bad")
+            return
+        }
+        if (!url.trim() || url.includes(" ")) {
+            setalert("Enter URL", "bad")
+            return
+        }
+        setishandling(true);
+        try {
+            const response = await fetch(`http://localhost:3000/custom?url=${url}&id=${customid}`, {
+                method: "POST",
+            });
+            if (response.status != 200) {
+                console.error("URL already Exisits with this id choose any other id");
+                setalert("Id already exists")
+                return
+            }
+            const data = await response.json();
+            setnanopath(`http://localhost:3000/url?id=${data.id}`);
+            console.log(data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setishandling(false);
+        }
+    }
+
+
     return (
         <>
-            <div className="input-container">
-                <input
-                    type="text"
-                    className="url-input"
-                    onChange={(e) => seturl(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            handleapi()
-                        }
-                    }}
-                />
-                <button
-                    className="generate-btn"
-                    onClick={handleapi}
-                    disabled={ishandling}
-                >
-                    {ishandling ? "Generating..." : "Get Nano Path"}
-                </button>
-            </div>
+            <Outlet context={{ ishandling, seturl, setcustomid, customidhandleapi, handleapi }} />
             {nanopath && (
                 <div className="result-box">
                     <div className="result-container">

@@ -28,7 +28,7 @@ const urlSchema = mongoose.Schema(
 
 const urlModel = mongoose.model("urlModel", urlSchema)
 app.use(cors({
-    origin: ["https://nanopath.netlify.app","http://localhost:5173"],
+    origin: ["https://nanopath.netlify.app", "http://localhost:5173"],
     methods: ["GET", "POST"],
 }));
 
@@ -46,7 +46,7 @@ app.post("/url", async (req, res) => {
     }
     let id
     while (true) {
-        id = crypto.randomBytes(8).toString("hex")
+        id = crypto.randomBytes(4).toString("hex")
         const exists = await urlModel.findOne({ id })
         if (!exists) break
     }
@@ -85,7 +85,8 @@ app.post("/custom", async (req, res) => {
     }
     const existing = await urlModel.findOne({ id: query.id })
     if (existing) {
-        return res.status(200).json({ message: "url already exists with id" })
+        if (existing.url == query.url) return res.status(200).json(existing)
+        return res.status(400).json({ message: "url already exists with id" })
     }
     const newEntry = new urlModel({ id: query.id, url: query.url });
     await newEntry.save();
