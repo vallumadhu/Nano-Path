@@ -30,10 +30,10 @@ export default function Header() {
             </button>
             <div className={`sideBar ${showMenu ? "sideBarshow" : "sideBarhide"}`}>
                 <nav>
-                    <Link to="" className="nav-link"><p>Home</p></Link>
-                    <Link to="/send-note" className="nav-link"><p>Send Note</p></Link>
-                    <Link to="/custom-id" className="nav-link"><p>Custom ID</p></Link>
-                    <Link to="/about" className="nav-link"><p>About</p></Link>
+                    <Link to="" className="nav-link" onClick={() => setShowMenu(false)}><p>Home</p></Link>
+                    <Link to="/send-note" className="nav-link" onClick={() => setShowMenu(false)} ><p>Send Note</p></Link>
+                    <Link to="/custom-id" className="nav-link" onClick={() => setShowMenu(false)}><p>Custom ID</p></Link>
+                    <Link to="/about" className="nav-link" onClick={() => setShowMenu(false)}><p>About</p></Link>
                 </nav>
             </div>
         </header>
