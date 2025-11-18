@@ -1,5 +1,6 @@
 const express = require("express")
 const mongoose = require("mongoose")
+const randomWords = require('random-words')
 const crypto = require("crypto")
 const cors = require("cors");
 require("dotenv").config();
@@ -26,9 +27,29 @@ const urlSchema = mongoose.Schema(
     }
 )
 
+const noteSchema = mongoose.Schema(
+    {
+        id: {
+            type: String,
+            unique: true,
+            required: true
+        },
+        email: {
+            type: String,
+            default: null
+        },
+        note: {
+            type: String,
+            required: true
+        }
+    }
+)
+
 const urlModel = mongoose.model("urlModel", urlSchema)
+const noteModel = mongoose.model("noteModel", noteSchema)
+
 app.use(cors({
-    origin: "https://nanopath.netlify.app",
+    origin: ["https://nanopath.netlify.app", "*"],
     methods: ["GET", "POST"],
 }));
 
@@ -44,7 +65,7 @@ app.post("/url", async (req, res) => {
     if (existing) {
         return res.status(200).json(existing)
     }
-    let id
+    let id = null;
     while (true) {
         id = crypto.randomBytes(4).toString("hex")
         const exists = await urlModel.findOne({ id })
@@ -92,6 +113,72 @@ app.post("/custom", async (req, res) => {
     await newEntry.save();
 
     return res.status(200).json(newEntry);
+})
+
+app.post("/note", async (req, res) => {
+    const query = req.query
+    const body = req.body
+    if (!query.id) {
+        return res.status(400).json({ message: "id query is required" })
+    }
+    const existing = await noteModel.findOne({ id: query.id })
+    if (existing) {
+        return res.status(400).json({ message: "note already exists with id" })
+    }
+    if (!body.note) {
+        return res.status(400).json({ message: "note is required" })
+    }
+    body.email = body.email ?? null
+
+    const newNode = new noteModel({ id: query.id, note: body.note, email: body.email })
+    await newNode.save()
+
+    return res.status(200).json(newNode)
+})
+
+app.get("/note", async (req, res) => {
+    const query = req.query
+    if (!query.id) {
+        return res.status(400).json({ message: "id query is required" })
+    }
+    const note = await noteModel.findOne({ id: query.id })
+    if (!note) {
+        return res.status(404).json({ message: "note doesn't exist" })
+    }
+
+    res.status(200).json({ "note": note })
+})
+app.post("/note-random-id", async (req, res) => {
+    let id = null;
+    while (true) {
+        id = randomWords.generate(2).join("-")
+        const exists = await noteModel.findOne({ id })
+        if (!exists) break
+    }
+
+    return res.status(200).json({ "id": id })
+})
+
+app.post("/updatenote", async (req, res) => {
+    const query = req.query
+    const body = req.body
+    if (!query.id) {
+        return res.status(400).json({ message: "id query is required" })
+    }
+    if (!body.note) {
+        return res.status(400).json({ message: "note is required" })
+    }
+    try {
+        let result = await noteModel.updateOne(
+            { id: query.id },
+            { $set: { note: body.note } }
+        )
+    }
+    catch (error) {
+        res.status(500).json({ "message": "some error occured during updaing database" })
+    }
+
+    res.status(200).json({ "message": "updated database successfully" })
 })
 
 app.get("/health", (req, res) => {
