@@ -28,7 +28,7 @@ export default function ReciveNote() {
         }
         const token = localStorage.getItem("token")
         try {
-            const res = await fetch(`https://nano-path.onrender.com/updatenote?id=${id}`, {
+            const res = await fetch(`http://localhost:3000/updatenote?id=${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": token
@@ -55,23 +55,25 @@ export default function ReciveNote() {
     useEffect(() => {
         async function fetchNote() {
             const token = localStorage.getItem("token")
+            console.log(email)
             try {
-                const res = await fetch(`https://nano-path.onrender.com/fetchnote?id=${id}`, {
+                const res = await fetch(`http://localhost:3000/fetchnote?id=${id}`, {
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": token
                     },
-                    method: "post",
-                    body: JSON.stringify({
-                        email: email
-                    })
+                    method: "post"
                 });
                 const data = await res.json();
-                setnote(data.note.note)
+                if (res.status == 200) {
+                    setnote(data.note.note)
+                } else {
+                    setalert(data.message, "bad");
+                }
             } catch (e) {
                 setalert(e.message, "bad");
                 try {
-                    const res = await fetch(`https://nano-path.onrender.com/note?id=${id}`, {
+                    const res = await fetch(`http://localhost:3000/note?id=${id}`, {
                         headers: {
                             "Content-Type": "application/json",
                             "Authorization": token
@@ -81,8 +83,7 @@ export default function ReciveNote() {
                             note: " ",
                             view: view,
                             edit: edit,
-                            access: access,
-                            email: email
+                            access: access
                         })
                     })
                     if (res.status == 200) {
@@ -131,12 +132,12 @@ export default function ReciveNote() {
                             onChange={(e) => setAccess(e.target.value.split(",").map((email) => email.trim().toLowerCase()).filter(email => email.length > 0))}
                         />
                     </div>
-                    <div className="protectionOverlay">
+                    {!email && <div className="protectionOverlay">
                         <p>Login to Access</p>
                         <Link to="/login">
                             <button className="login-btn">Login</button>
                         </Link>
-                    </div>
+                    </div>}
                 </div>
                 <button className="save-btn" onClick={postNote}>Save</button>
             </div>

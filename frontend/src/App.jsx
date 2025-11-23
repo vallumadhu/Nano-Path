@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Header from "./Header";
 import AlertBox from "./alertBox";
 import Home from "./Home";
@@ -29,6 +29,21 @@ function App() {
       setalertmessages(prev => prev.filter(msg => msg.id !== id));
     }, 2800)
   }
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (token) {
+      fetch("http://localhost:3000/email", {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        }
+      }).then((res) => res.json())
+        .then((data) => {
+          setemail(() => data.email)
+        })
+    }
+
+  }, [])
   return (
     <>
       <AppContext.Provider value={{ copytoclipboard, setalert, setemail, email }}>

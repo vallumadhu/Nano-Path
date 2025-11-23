@@ -26,17 +26,17 @@ const authenticate = (req, res, next) => {
     }
 };
 
-const emailMatch = (req, email) => {
+const getEmail = (req) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return false;
+        return null;
     }
     const token = authHeader.split(" ")[1];
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        return email == decoded.userId
+        return decoded.userId
     } catch (err) {
-        return false;
+        return null;
     }
 }
 
@@ -105,8 +105,8 @@ app.use(express.json());
 
 app.post("/note", async (req, res) => {
     const { id } = req.query
-    let { note, view = false, edit = false, access = [], email = null } = req.body
-    email = email ? email.toLowerCase() : null
+    let { note, view = false, edit = false, access = [] } = req.body
+    const email = getEmail(req)
     if (!id) {
         return res.status(400).json({ message: "id query is required" })
     }
@@ -117,11 +117,8 @@ app.post("/note", async (req, res) => {
     if (!note) {
         return res.status(400).json({ message: "note is required" })
     }
-    if (view || edit || access || email) {
-        if (!emailMatch(req, email)) {
-            return res.status(401).json({ message: "authentication error" })
-        }
-    }
+    if ((view || edit || access) && !(email)) return res.status(401).json({ message: "authentication error" });
+
     const newNode = new noteModel({ id, note, email, view, edit, access })
     await newNode.save()
 
@@ -130,8 +127,7 @@ app.post("/note", async (req, res) => {
 
 app.post("/fetchnote", async (req, res) => {
     const query = req.query
-    let { email = null } = req.body
-    email = email ? email.toLowerCase() : null
+    const email = getEmail(req)
     if (!query.id) {
         return res.status(400).json({ message: "id query is required" })
     }
@@ -141,11 +137,8 @@ app.post("/fetchnote", async (req, res) => {
     }
     if (note.view === false) {
         if (!email) return res.status(400).json({ "message": "You don't have access to view this note" })
-        if (!emailMatch(req, email)) {
-            return res.status(401).json({ message: "authentication error" })
-        }
     }
-    if (email != note.email && !note.access.includes(email)) return res.status(400).json({ "message": "You don't have access to view this note" })
+    if (email != note.email && !note.access.includes(email)) return res.status(400).json({ "message": note.email })
     res.status(200).json({ "note": note })
 })
 app.get("/note-random-id", async (req, res) => {
@@ -161,7 +154,8 @@ app.get("/note-random-id", async (req, res) => {
 
 app.post("/updatenote", async (req, res) => {
     const { id } = req.query
-    let { note, view = false, edit = false, access = [], email = null } = req.body
+    let { note, view = false, edit = false, access = [] } = req.body
+    const email = getEmail(req)
     email = email ? email.toLowerCase() : null
     if (!id) {
         return res.status(400).json({ message: "id query is required" })
@@ -171,10 +165,8 @@ app.post("/updatenote", async (req, res) => {
     }
 
     const existing = await noteModel.findOne({ id: id })
-    if (existing.edit === false) {
-        if (!emailMatch(req, email)) {
-            return res.status(401).json({ message: "authentication error" })
-        }
+    if (existing.edit === false && !email) {
+        return res.status(401).json({ message: "authentication error" })
     }
     if (email != existing.email && !existing.access.includes(email)) return res.status(400).json({ "message": "You don't have access to edit this note" })
 
@@ -245,6 +237,7 @@ app.post("/register", async (req, res) => {
             console.error("Failed to register:", error.message)
             res.status(400).json({ message: error.message })
         })
+    res.status(200).json({ message: "registered" })
 })
 
 app.get("/email", authenticate, (req, res) => {

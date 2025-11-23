@@ -20,7 +20,7 @@ export default function Login() {
                     return;
                 }
                 if (data.email) {
-                    setemail(data.email.userId);
+                    setemail(data.email.userId.toLowerCase());
                 }
             })
             .catch(err => console.error("Fetch error:", err));

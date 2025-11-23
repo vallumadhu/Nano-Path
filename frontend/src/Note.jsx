@@ -46,8 +46,7 @@ export default function Note() {
                     note: note,
                     view: view,
                     edit: edit,
-                    access: access,
-                    email: email
+                    access: access
                 })
             })
             if (res.status == 200) {
