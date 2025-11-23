@@ -7,6 +7,8 @@ export default function ReciveNote() {
     const [access, setAccess] = useState([]);
     const [edit, setedit] = useState(true);
     const [view, setview] = useState(true);
+    const [showcontrols, setshowcontrols] = useState(true)
+    const accessInput = useRef()
     const textAreaRef = useRef()
 
     const heightHandle = () => {
@@ -38,24 +40,24 @@ export default function ReciveNote() {
                     note: note,
                     view: view,
                     edit: edit,
-                    access: access,
-                    email: email
+                    access: access
                 })
             })
             if (res.status == 200) {
                 setalert("Saved Successfully!", "good")
+            } else {
+                const data = await res.json()
+                setalert(data.message, "bad")
             }
-
         } catch (e) {
             console.error(e)
-            setalert("Error while saving", "bad")
+            setalert(e.message, "bad")
         }
     }
 
     useEffect(() => {
         async function fetchNote() {
             const token = localStorage.getItem("token")
-            console.log(email)
             try {
                 const res = await fetch(`http://localhost:3000/fetchnote?id=${id}`, {
                     headers: {
@@ -67,8 +69,13 @@ export default function ReciveNote() {
                 const data = await res.json();
                 if (res.status == 200) {
                     setnote(data.note.note)
+                    setAccess(data.note.access)
+                    accessInput.current.value = data.note.access.join(", ")
+                    setedit(data.note.edit)
+                    setview(data.note.view)
                 } else {
                     setalert(data.message, "bad");
+                    setshowcontrols(false)
                 }
             } catch (e) {
                 setalert(e.message, "bad");
@@ -88,6 +95,7 @@ export default function ReciveNote() {
                     })
                     if (res.status == 200) {
                         setalert(`Created a note with ${id}`, "good")
+                        setshowcontrols(true)
                     }
 
                 } catch (e) {
@@ -108,7 +116,7 @@ export default function ReciveNote() {
             </div>
             <div className="note-controls">
                 <p className="notelabel">Note Name: {id}</p>
-                <div className="protectionBox">
+                {showcontrols && <div className="protectionBox">
                     <div className="option">
                         <label>Allow others to view:</label>
                         <select onChange={(e) => setview(e.target.value === "true")} value={view}>
@@ -129,6 +137,7 @@ export default function ReciveNote() {
                         <input
                             type="text"
                             placeholder="Enter email (comma-separated)"
+                            ref={accessInput}
                             onChange={(e) => setAccess(e.target.value.split(",").map((email) => email.trim().toLowerCase()).filter(email => email.length > 0))}
                         />
                     </div>
@@ -138,7 +147,7 @@ export default function ReciveNote() {
                             <button className="login-btn">Login</button>
                         </Link>
                     </div>}
-                </div>
+                </div>}
                 <button className="save-btn" onClick={postNote}>Save</button>
             </div>
         </section></>)

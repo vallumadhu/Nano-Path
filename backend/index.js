@@ -96,8 +96,7 @@ const User = mongoose.model("User", userSchema);
 const noteModel = mongoose.model("noteModel", noteSchema)
 
 app.use(cors({
-    // origin: ["https://nanopath.netlify.app", "http://localhost:5173", "https://orbshare.netlify.app"],
-    origin: "*",
+    origin: ["https://nanopath.netlify.app", "http://localhost:5173", "https://orbshare.netlify.app"],
     methods: ["GET", "POST"],
 }));
 
@@ -105,8 +104,8 @@ app.use(express.json());
 
 app.post("/note", async (req, res) => {
     const { id } = req.query
-    let { note, view = false, edit = false, access = [] } = req.body
-    const email = getEmail(req)
+    let { note, view = true, edit = true, access = [] } = req.body
+    let email = getEmail(req)
     if (!id) {
         return res.status(400).json({ message: "id query is required" })
     }
@@ -127,7 +126,7 @@ app.post("/note", async (req, res) => {
 
 app.post("/fetchnote", async (req, res) => {
     const query = req.query
-    const email = getEmail(req)
+    let email = getEmail(req)
     if (!query.id) {
         return res.status(400).json({ message: "id query is required" })
     }
@@ -137,8 +136,9 @@ app.post("/fetchnote", async (req, res) => {
     }
     if (note.view === false) {
         if (!email) return res.status(400).json({ "message": "You don't have access to view this note" })
+
+        if (email != note.email && !note.access.includes(email)) return res.status(400).json({ "message": "You don't have Access to view" })
     }
-    if (email != note.email && !note.access.includes(email)) return res.status(400).json({ "message": note.email })
     res.status(200).json({ "note": note })
 })
 app.get("/note-random-id", async (req, res) => {
@@ -154,8 +154,8 @@ app.get("/note-random-id", async (req, res) => {
 
 app.post("/updatenote", async (req, res) => {
     const { id } = req.query
-    let { note, view = false, edit = false, access = [] } = req.body
-    const email = getEmail(req)
+    let { note, view = true, edit = true, access = [] } = req.body
+    let email = getEmail(req)
     email = email ? email.toLowerCase() : null
     if (!id) {
         return res.status(400).json({ message: "id query is required" })
@@ -165,10 +165,11 @@ app.post("/updatenote", async (req, res) => {
     }
 
     const existing = await noteModel.findOne({ id: id })
-    if (existing.edit === false && !email) {
-        return res.status(401).json({ message: "authentication error" })
+    console.log(existing)
+    if (existing.edit === false) {
+        if (!email) return res.status(401).json({ message: "You don't have access to edit this note" });
+        if (email != existing.email && !existing.access.includes(email)) return res.status(400).json({ "message": "You don't have access to edit this note" });
     }
-    if (email != existing.email && !existing.access.includes(email)) return res.status(400).json({ "message": "You don't have access to edit this note" })
 
     try {
         let result = await noteModel.updateOne(
@@ -190,7 +191,7 @@ app.post("/login", async (req, res) => {
         return res.status(400).json({ message: "Email and password required" })
     }
 
-    const email = body.email
+    let email = body.email
 
     const user = await User.findOne({ email })
     if (!user) {
