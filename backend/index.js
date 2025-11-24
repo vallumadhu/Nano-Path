@@ -116,7 +116,7 @@ app.post("/note", async (req, res) => {
     if (!note) {
         return res.status(400).json({ message: "note is required" })
     }
-    if ((!view || !edit || access) && !(email)) return res.status(401).json({ message: "authentication error" });
+    if ((!view || !edit || access.length > 0) && !email) return res.status(401).json({ message: "authentication error" });
 
     const newNode = new noteModel({ id, note, email, view, edit, access })
     await newNode.save()
