@@ -116,7 +116,7 @@ app.post("/note", async (req, res) => {
     if (!note) {
         return res.status(400).json({ message: "note is required" })
     }
-    if ((view || edit || access) && !(email)) return res.status(401).json({ message: "authentication error" });
+    if ((!view || !edit || access) && !(email)) return res.status(401).json({ message: "authentication error" });
 
     const newNode = new noteModel({ id, note, email, view, edit, access })
     await newNode.save()
@@ -164,7 +164,7 @@ app.post("/updatenote", async (req, res) => {
         return res.status(400).json({ message: "note is required" })
     }
     const existing = await noteModel.findOne({ id: id })
-    if ((!view || !edit || !access) && (!email || (email != existing.email && !existing.access.includes(email)))) return res.status(401).json({ message: "You can only edit access control of your notes." })
+    if ((!view || !edit) && (!email || (email != existing.email && !existing.access.includes(email)))) return res.status(401).json({ message: "You can only edit access control of your notes." })
     console.log(existing)
     if (existing.edit === false) {
         if (!email) return res.status(401).json({ message: "You don't have access to edit this note" });
