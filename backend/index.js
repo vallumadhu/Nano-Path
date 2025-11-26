@@ -53,7 +53,8 @@ const noteSchema = mongoose.Schema(
         },
         email: {
             type: String,
-            default: null
+            default: null,
+            lowercase: true
         },
         note: {
             type: String,
@@ -106,6 +107,7 @@ app.post("/note", async (req, res) => {
     const { id } = req.query
     let { note, view = true, edit = true, access = [] } = req.body
     let email = getEmail(req)
+    email = email ? email.toLowerCase() : null
     if (!id) {
         return res.status(400).json({ message: "id query is required" })
     }
@@ -127,6 +129,7 @@ app.post("/note", async (req, res) => {
 app.post("/fetchnote", async (req, res) => {
     const query = req.query
     let email = getEmail(req)
+    email = email ? email.toLowerCase() : null
     if (!query.id) {
         return res.status(400).json({ message: "id query is required" })
     }
@@ -192,6 +195,7 @@ app.post("/login", async (req, res) => {
     }
 
     let email = body.email
+    email = email ? email.toLowerCase() : null
 
     const user = await User.findOne({ email })
     if (!user) {
@@ -220,7 +224,9 @@ app.post("/login", async (req, res) => {
 
 app.post("/register", async (req, res) => {
     const body = req.body
-    if (!body.email || !body.password) {
+    let email = body.email
+    email = email ? email.toLowerCase() : null
+    if (!email || !body.password) {
         return res.status(400).json({ message: "Email and password required" })
     }
 
@@ -241,12 +247,27 @@ app.post("/register", async (req, res) => {
 
 app.get("/email", authenticate, (req, res) => {
     if (req.user) {
-        console.log(req.user)
         res.status(200).json({ "email": req.user })
     } else {
         res.status(404).json({ "message": "User Not Found" })
     }
 })
+
+app.get("/data", authenticate, async (req, res) => {
+    let email = req.user.userId;
+
+    if (!email) {
+        return res.status(401).json({ message: "User Not Found" });
+    }
+    email = email.toLowerCase()
+    try {
+        const notes = await noteModel.find({ email: email })
+        res.status(200).json({ "email": email, "notes": notes })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server Error" })
+    }
+});
 
 app.get("/health", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");

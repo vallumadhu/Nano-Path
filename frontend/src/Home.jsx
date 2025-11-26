@@ -1,8 +1,12 @@
 import { Outlet } from "react-router-dom";
+import Header from "./Header";
 export default function Home() {
     return (
         <>
-            <Outlet />
+            <Header />
+            <main className="main">
+                <Outlet />
+            </main>
         </>
     )
 }

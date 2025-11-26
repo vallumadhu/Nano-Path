@@ -11,6 +11,7 @@ import ReciveNote from './ReciveNote.jsx'
 import NoteIdInputPage from './NoteIdInputPage.jsx'
 import Register from './Register.jsx'
 import Note from './Note.jsx'
+import ProfilePage from './ProfilePage.jsx'
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Routes>
@@ -20,10 +21,11 @@ createRoot(document.getElementById('root')).render(
           <Route path='note' element={<NoteIdInputPage />} />
           <Route path='note/:id' element={<ReciveNote />} />
           <Route path='file' element={<FilePage />} />
+          <Route path="about" element={<About />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
         </Route>
-        <Route path="about" element={<About />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
     </Routes>
   </BrowserRouter>,

@@ -788,10 +788,142 @@ input {
     box-shadow: 0 0 0;
     transform: scale(1);
 }
+
 .closeBtn span {
     font-size: 25px;
     line-height: 1;
     display: block;
+}
+
+/*Profile Page*/
+.profilePage {
+    width: 100%;
+}
+
+.profilePage .wrapper {
+    width: 100%;
+    height: 35vh;
+    background: linear-gradient(135deg, #0A0A0A 30%, #2b2b2b 50%, #0A0A0A 70%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease-in-out infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 65px;
+}
+
+.profilePage .wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profilePage .wrapper .profileIcon {
+    text-transform: uppercase;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3.5rem;
+    font-weight: 700;
+    border-radius: 50%;
+    transform: translateX(50%) translateY(50%);
+    background: linear-gradient(135deg,
+            #0a0a0a 15%,
+            #461ca8 45%,
+            #2e0c56 60%,
+            #0a0a0a 85%);
+
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease-in-out infinite;
+}
+
+.profilePage .container {
+    width: 95%;
+    margin: 40px auto 10px;
+    color: #c2c2c2;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.profilePage .child h3 {
+    color: white;
+    margin: 15px 0;
+    border-bottom: 1px solid #c0c0c0;
+    padding-bottom: 4px;
+}
+
+.profilePage .child {
+    min-width: 350px;
+    flex-grow: 1;
+    background-color: #0d0d0d;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #2c2c2c;
+    margin: 15px;
+}
+
+.profilePage .child .noContent{
+    text-align: center;
+}
+.profilePage .child .content p {
+    margin: 10px 0;
+    font-size: 15px;
+}
+
+.profilePage .LinkBox {
+    display: flex;
+    width: 95%;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px auto;
+}
+
+.profilePage .LinkBox button {
+    padding: 12px 15px;
+}
+
+.profilePage .backBtnBox,
+.profilePage .logoutBtnBox {
+    position: absolute;
+    top: 15px;
+}
+
+.profilePage .backBtnBox {
+    left: 15px;
+}
+
+.profilePage .logoutBtnBox {
+    right: 15px;
+}
+
+.profilePage .backBtnBox button {
+    background: #1a1a1a;
+    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0);
+}
+
+.profilePage .backBtnBox button:hover {
+    background: #262626;
+    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.4);
+    transform: scale(1);
+}
+
+.profilePage .logoutBtnBox button {
+    background: #e84d4d;
+    border: 1px solid #ff6b6b;
+    padding: 13px 13px;
+    box-shadow: 0px 0px 12px rgba(255, 90, 90, 0);
+}
+
+.profilePage .logoutBtnBox button:hover {
+    background: #ff5757;
+    box-shadow: 0px 0px 12px rgba(255, 90, 90, 0.6);
+    transform: scale(1);
 }
 
 /*Animations */
@@ -967,5 +1099,15 @@ input {
 
     .result-container {
         max-width: 98%;
+    }
+    .profilePage .wrapper .profileIcon{
+        width: 75px;
+        height: 75px;
+    }
+    .profilePage .wrapper{
+        height: 25vh;
+    }
+    .profilePage .child{
+        min-width: 0px;
     }
 }

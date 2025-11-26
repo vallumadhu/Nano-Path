@@ -59,7 +59,7 @@ export default function Login() {
                 localStorage.setItem("token", token);
                 setalert("Login Successfully")
                 getEmail(token)
-                navigate(-1)
+                navigate("/")
             } else {
                 console.warn("No token found in header");
                 setalert("Error While Logging In", "bad")

@@ -27,15 +27,6 @@ export default function Header() {
             })
             .catch(err => console.error("Fetch error:", err));
     }, []);
-
-
-    const [showLogout, setShowLogout] = useState(false);
-    const logoutHandler = () => {
-        localStorage.setItem("token", null)
-        setemail("")
-        setShowLogout(false)
-    }
-
     return (
         <header className="header">
             <nav className="nav">
@@ -54,9 +45,20 @@ export default function Header() {
                 <div className="nav-right">
                     <Link to="/file" className="nav-link"><p>Share File</p></Link>
                     <Link to="/about" className="nav-link"><p>About</p></Link>
-                    {email ? <div className="profileiconBox"> <div className="profileicon" onClick={() => setShowLogout(prev => !prev)}><p>{email[0]}</p> </div> {showLogout && <div className="logoutBox"><button onClick={logoutHandler}>Log Out</button></div>}</div> : <Link to="/login">
-                        <button className="login-btn">Login</button>
-                    </Link>}
+                    {email ? (
+                        <Link to={"/profile"}>
+                            <div className="profileiconBox">
+                                <div className="profileicon">
+                                    <p>{email[0]}</p>
+                                </div>
+                            </div>
+                        </Link>
+                    ) : (
+                        <Link to="/login">
+                            <button className="login-btn">Login</button>
+                        </Link>
+                    )}
+
                 </div>
 
             </nav>
@@ -64,10 +66,21 @@ export default function Header() {
                 ☰
             </button>
             <div className="loginBox">
-                {email ? <div className="profileiconBox"> <div className="profileicon" onClick={() => setShowLogout(prev => !prev)}><p>{email[0]}</p> </div> {showLogout && <div className="logoutBox"><button onClick={logoutHandler}>Log Out</button></div>}</div> : <Link to="/login">
-                    <button className="login-btn">Login</button>
-                </Link>}
+                {email ? (
+                    <Link to={"/profile"}>
+                        <div className="profileiconBox">
+                            <div className="profileicon">
+                                <p>{email[0]}</p>
+                            </div>
+                        </div>
+                    </Link>
+                ) : (
+                    <Link to="/login">
+                        <button className="login-btn">Login</button>
+                    </Link>
+                )}
             </div>
+
             <div className={`sideBar ${showMenu ? "sideBarshow" : "sideBarhide"}`}>
                 <nav>
                     <Link to="" className="nav-link" onClick={() => setShowMenu(false)}><p>Home</p></Link>
