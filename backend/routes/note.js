@@ -1,5 +1,5 @@
 const express = require("express");
-const noteModel = require("../models/note");
+const { noteModel } = require("../models/note");
 const randomWords = require("random-words");
 const { getEmail, authenticate } = require("../controllers/common");
 const router = express.Router()

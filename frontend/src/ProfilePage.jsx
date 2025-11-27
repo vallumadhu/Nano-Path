@@ -75,7 +75,7 @@ export default function ProfilePage() {
                 <h3>Baisc Info</h3>
                 <div className="content">
                     <p>Email: {email}</p>
-                    <p>Notes Saved: {notes.length}</p>
+                    <p>Notes Saved: {notes?.length}</p>
                     <p>Files Saved: 0</p>
                     <p>Bookmarks Saved: 0</p>
                 </div>
