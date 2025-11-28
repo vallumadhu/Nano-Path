@@ -2,7 +2,9 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.GMAIL_ADDRESS,
     pass: process.env.GMAIL_APP_PASS,
@@ -11,15 +13,15 @@ const transporter = nodemailer.createTransport({
 
 const sendMail = async (to, sub, msg) => {
   try {
-    await transporter.sendMail({
-      from: process.env.GMAIL_ADDRESS,
+    const result = await transporter.sendMail({
+      from: `"NanoPath" <${process.env.GMAIL_ADDRESS}>`,
       to,
       subject: sub,
       html: msg,
     });
-    console.log("Email sent");
+    console.log("Mail sent:", result);
   } catch (err) {
-    console.error("Email error:", err);
+    console.error("Mail error:", err);
   }
 };
 
