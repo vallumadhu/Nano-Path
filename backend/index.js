@@ -14,7 +14,7 @@ connectDB(process.env.ATLAS_URL)
     .catch((e) => console.error("Failed to connect to MongoDB", e.message))
 
 app.use(cors({
-    // origin: ["https://nanopath.netlify.app", "https://orbshare.netlify.app", "http://localhost:5173"],
+    origin: ["https://nanopath.netlify.app", "https://orbshare.netlify.app", "http://localhost:5173"],
     // origin: "*",
     methods: ["GET", "POST"],
 }))
