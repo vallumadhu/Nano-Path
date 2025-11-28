@@ -14,8 +14,7 @@ connectDB(process.env.ATLAS_URL)
     .catch((e) => console.error("Failed to connect to MongoDB", e.message))
 
 app.use(cors({
-    origin: ["https://nanopath.netlify.app", "https://orbshare.netlify.app", "http://localhost:5173"],
-    // origin: "*",
+    origin: "https://orbshare.netlify.app",
     methods: ["GET", "POST"],
 }))
 
@@ -28,7 +27,6 @@ app.get("/health", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*")
     res.status(200).json({ status: "ok" })
 })
-
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`)
