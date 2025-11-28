@@ -3,7 +3,7 @@ require('dotenv').config()
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
-    secure: true,
+    secure: false,
     port: 587,
     auth: {
         user: process.env.GMAIL_ADDRESSS,
