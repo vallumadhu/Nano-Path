@@ -10,7 +10,7 @@ const sendMail = async (to, sub, msg) => {
             subject: sub,
             html: msg,
         });
-        console.log('Mail sent:', result.data.id);
+        console.log('Mail sent:', result);
         return result;
     } catch (err) {
         console.error('Mail error:', err);
