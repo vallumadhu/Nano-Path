@@ -11,7 +11,7 @@ async function invokeChute(prompt) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "openai/gpt-oss-20b",
+                model: "zai-org/GLM-4.5-Air",
                 messages: [
                     {
                         role: "user",
