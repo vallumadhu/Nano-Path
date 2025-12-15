@@ -11,7 +11,7 @@ async function invokeChute(prompt) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "zai-org/GLM-4.5-Air",
+                model: "unsloth/gemma-3-4b-it",
                 messages: [
                     {
                         role: "user",
