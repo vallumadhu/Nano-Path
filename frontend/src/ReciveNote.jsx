@@ -32,16 +32,14 @@ export default function ReciveNote() {
                 }
             );
             if (!res.ok) {
-                setalert("Error while indenting", "bad")
                 throw new Error("Formatter API failed")
             }
             const data = await res.json()
             if (!data.formatted) {
-                setalert("Empty code returned", "bad")
                 throw new Error("Formatter API failed")
             }
-            setnote(data.formatted)
             console.log(data)
+            setnote(data.formatted)
             setalert("Successfully indented", "good")
         } catch (e) {
             console.error(e);
@@ -66,15 +64,14 @@ export default function ReciveNote() {
                 }
             );
             if (!res.ok) {
-                setalert("Error while Correcting Grammar", "bad")
                 throw new Error("Grammar API failed")
             }
             const data = await res.json()
-            setnote(data.corrected)
             if (!data.corrected) {
-                setalert("Empty note returned", "bad")
                 throw new Error("Grammar API failed")
             }
+            console.log(data.corrected)
+            setnote(data.corrected)
             setalert("Successfully Corrected Grammar", "good")
         } catch (e) {
             console.error(e);

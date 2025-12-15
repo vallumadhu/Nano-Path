@@ -50,11 +50,9 @@ export default function Note() {
             }
             const data = await res.json()
             if (!data.formatted) {
-                setalert("Empty code returned", "bad")
                 throw new Error("Formatter API failed")
             }
             setnote(data.formatted)
-            console.log(data)
             setalert("Successfully indented", "good")
         } catch (e) {
             console.error(e);
@@ -79,15 +77,14 @@ export default function Note() {
                 }
             );
             if (!res.ok) {
-                setalert("Error while Correcting Grammar", "bad")
                 throw new Error("Grammar API failed")
             }
             const data = await res.json()
-            setnote(data.corrected)
             if (!data.corrected) {
                 setalert("Empty note returned", "bad")
                 throw new Error("Grammar API failed")
             }
+            setnote(data.corrected)
             setalert("Successfully Corrected Grammar", "good")
         } catch (e) {
             console.error(e);

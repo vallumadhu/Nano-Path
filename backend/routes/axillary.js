@@ -39,11 +39,19 @@ async function invokeChute(prompt) {
 
 router.post("/note/formatter", async (req, res) => {
     const noteData = req.body.note
-    const prompt = `Detect the programming language in this note. 
-- Fix indentation and syntax errors only in the code. 
-- Do not change any text, paragraphs, or other natural language content. 
-- Keep everything else exactly as in the note. 
-Return only the resulting content: ${noteData}`;
+    const prompt = `
+You are a precise code formatter. Follow these rules:
+1. Detect the programming language of any code blocks in the note.
+2. Fix only indentation and syntax errors in the code.
+3. Do not change any natural language text, comments, or paragraphs.
+4. Do not summarize, remove, or alter any content outside of the code.
+5. If the code is already correct and no changes are needed, return the content exactly as it was.
+
+Content to process:
+${noteData}
+
+Return only the resulting content exactly as instructed.
+`;
 
     const chuteResponse = await invokeChute(prompt);
     const formattedNote = chuteResponse.choices?.[0]?.message?.content || "";
@@ -56,11 +64,19 @@ Return only the resulting content: ${noteData}`;
 
 router.post("/note/grammarfix", async (req, res) => {
     const noteData = req.body.note;
-    const prompt = `Check the following content. 
-- Do not modify any code. Leave all code blocks exactly as they are.
-- Correct grammar, punctuation, and readability only in natural language text, comments, and paragraphs, without changing their meaning.
-- Keep the original structure, spacing, and code intact.
-Return only the corrected content: ${noteData}`;
+    const prompt = `
+You are a precise editor. Follow these rules:
+1. Leave all code blocks and inline code exactly as they are.
+2. Only correct grammar, punctuation, and readability in normal text, comments, and paragraphs.
+3. Do not summarize, add, or remove content.
+4. Keep original spacing, indentation, and line breaks intact.
+5. If no corrections are needed, return the content exactly as it was.
+
+Content to fix:
+${noteData}
+
+Return the corrected content exactly as instructed.
+`;
 
 
     const chuteResponse = await invokeChute(prompt);
