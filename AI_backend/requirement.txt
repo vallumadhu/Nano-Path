@@ -6,4 +6,5 @@ torch>=2.2.0
 pinecone>=5.1.0
 langchain>=1.2.0
 langchain-text-splitters>=0.3.0
+python-dotenv>=1.0.1
 uvicorn>=0.30.0
