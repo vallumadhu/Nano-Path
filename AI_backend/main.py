@@ -27,11 +27,3 @@ app.include_router(
     prefix="/api",
     tags=["Notes"]
 )
-
-@app.get("/health")
-def health():
-    response = JSONResponse(content={"status": "ok"})
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "*"
-    return response

@@ -4,15 +4,18 @@ import { AppContext } from "./App"
 import codeIcon from "./assets/code-solid-full.svg";
 import chatIcon from "./assets/comment-solid-full.svg";
 import textIcon from "./assets/spell-check-solid-full.svg";
+import Chatbot from "./chatbot";
 
 export default function ReciveNote() {
     const { setalert, email, setshowQR, seturl, setShowLoading } = useContext(AppContext)
     const [access, setAccess] = useState([]);
+    const [unique_note_id, setunique_note_id] = useState("")
     const [edit, setedit] = useState(true);
     const [view, setview] = useState(true);
     const [showcontrols, setshowcontrols] = useState(true)
     const accessInput = useRef()
     const textAreaRef = useRef()
+    const [isOpen, setIsOpen] = useState(false); //chatbot isopen
 
     const [note, setnote] = useState("")
     const { id } = useParams()
@@ -121,6 +124,33 @@ export default function ReciveNote() {
         setShowLoading(false)
     }
 
+    const chatsetup = async () => {
+        setalert("opening chatbot...", "good")
+        fetch("http://localhost:8000/api/embednote", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                note: note
+            })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Request failed");
+                return res.json();
+            })
+            .then(data => {
+                console.log(data)
+                setunique_note_id(data.note_id);
+                setIsOpen(true);
+            })
+            .catch(err => {
+                console.error(err);
+                setalert("Error while loading chatbot", "bad")
+            });
+
+    }
+
     useEffect(() => {
         async function fetchNote() {
             setShowLoading(true)
@@ -178,11 +208,12 @@ export default function ReciveNote() {
 
     return (<>
         <section className="note-section">
+            <Chatbot isOpen={isOpen} setIsOpen={setIsOpen} unique_note_id={unique_note_id} />
             <div className="text-box">
                 <div className="axillary-feature-box">
                     <button onClick={fixIndentation}><img src={codeIcon} alt="indentation fix" /></button>
                     <button onClick={fixGrammar}><img src={textIcon} alt="grammar fix" /></button>
-                    <button><img src={chatIcon} alt="ask ai" /></button>
+                    <button onClick={chatsetup}><img src={chatIcon} alt="ask ai" /></button>
                 </div>
                 <textarea name="" id="" ref={textAreaRef} onChange={(e) => setnote(e.target.value)} placeholder="Write your note and save when you're done." value={note}></textarea>
             </div>

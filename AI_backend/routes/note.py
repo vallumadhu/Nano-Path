@@ -10,7 +10,7 @@ from services.chat import talk_to_note
 class ChatRequest(BaseModel):
     unique_note_id:str
     query: str
-    past_conversations: List[str]
+    past_conversations: List[dict[str, str]]
 
 router = APIRouter()
 
@@ -25,7 +25,7 @@ def embednote(note:str= Form("")):
 
     for i, (doc, embedding) in enumerate(zip(chunks, embeddings)):
         vectors_to_upsert.append({
-            "id": f"doc_{i}",
+            "id": f"{unique_note_id}_chunk_{i}",
             "values": embedding.tolist(),
             "metadata": {
                 "text": doc,
@@ -33,12 +33,29 @@ def embednote(note:str= Form("")):
                 "chunk_index": i}
         })
 
-        if i%500 == 0:
-            index.upsert(vectors=vectors_to_upsert)
-            print(f"{i + 1} vectors processed")
-            vectors_to_upsert = []
+        if len(vectors_to_upsert) >= 500:
+                embedding_length = len(vectors_to_upsert[0]['values'])
+                print(f"Batch {total_processed // 500 + 1}: Index expects 768, Sent: {embedding_length}")
+                
+                if embedding_length != 768:
+                    raise ValueError(f"Dimension mismatch! Expected 768, got {embedding_length}")
+                
+                index.upsert(vectors=vectors_to_upsert)
+                total_processed += len(vectors_to_upsert)
+                print(f"{total_processed} vectors processed")
+                vectors_to_upsert = []
 
-    index.upsert(vectors=vectors_to_upsert)
+        if vectors_to_upsert:
+            embedding_length = len(vectors_to_upsert[0]['values'])
+            print(f"Final batch: Index expects 768, Sent: {embedding_length}")
+            
+            if embedding_length != 768:
+                raise ValueError(f"Dimension mismatch! Expected 768, got {embedding_length}")
+            
+            index.upsert(vectors=vectors_to_upsert)
+            total_processed += len(vectors_to_upsert)
+            print(f"{total_processed} total vectors processed")
+
 
     return {
             "message":"sucessfully embedded and uploaded to database",
@@ -60,5 +77,5 @@ def chat(data: ChatRequest):
     return {
         "note_id":data.unique_note_id,
         "query":data.query,
-        "output":response
+        "response":response
     }
