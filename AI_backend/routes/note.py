@@ -3,7 +3,7 @@ from typing import List
 from pydantic import BaseModel
 from fastapi import APIRouter,Form
 from services.splitter import splitter
-from models.embedding_models import ibm_embedding_model
+from models.embedding_models import embedding_model
 from db.pinecone import index
 from services.chat import talk_to_note
 
@@ -12,15 +12,17 @@ class ChatRequest(BaseModel):
     query: str
     past_conversations: List[dict[str, str]]
 
+class NoteRequest(BaseModel):
+    note: str
+
 router = APIRouter()
 
 @router.post("/embednote")
-def embednote(note:str= Form("")):
-
+def embednote(request: NoteRequest):
+    note = request.note
     chunks = splitter.split_text(note)
-    embeddings = ibm_embedding_model.encode(chunks)
+    embeddings = embedding_model.embed(chunks)
     unique_note_id = str(uuid.uuid4())
-
     vectors_to_upsert = []
 
     for i, (doc, embedding) in enumerate(zip(chunks, embeddings)):
@@ -35,26 +37,20 @@ def embednote(note:str= Form("")):
 
         if len(vectors_to_upsert) >= 500:
                 embedding_length = len(vectors_to_upsert[0]['values'])
-                print(f"Batch {total_processed // 500 + 1}: Index expects 768, Sent: {embedding_length}")
                 
-                if embedding_length != 768:
-                    raise ValueError(f"Dimension mismatch! Expected 768, got {embedding_length}")
+                if embedding_length != 384:
+                    raise ValueError(f"Dimension mismatch! Expected 384, got {embedding_length}")
                 
                 index.upsert(vectors=vectors_to_upsert)
-                total_processed += len(vectors_to_upsert)
-                print(f"{total_processed} vectors processed")
                 vectors_to_upsert = []
 
         if vectors_to_upsert:
             embedding_length = len(vectors_to_upsert[0]['values'])
-            print(f"Final batch: Index expects 768, Sent: {embedding_length}")
             
-            if embedding_length != 768:
-                raise ValueError(f"Dimension mismatch! Expected 768, got {embedding_length}")
+            if embedding_length != 384:
+                raise ValueError(f"Dimension mismatch! Expected 384, got {embedding_length}")
             
             index.upsert(vectors=vectors_to_upsert)
-            total_processed += len(vectors_to_upsert)
-            print(f"{total_processed} total vectors processed")
 
 
     return {

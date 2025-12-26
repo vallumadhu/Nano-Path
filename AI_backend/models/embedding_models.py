@@ -1,4 +1,4 @@
-from sentence_transformers import SentenceTransformer
-from config import EMBEDDING_MODEL_NAME
+from fastembed import TextEmbedding
 
-ibm_embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+
+embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")

@@ -3,7 +3,7 @@ import chatIcon from "./assets/comment-solid-full.svg";
 import "./chatbot.css"
 import { formatText } from './formatter';
 
-export default function Chatbot({isOpen,setIsOpen}) {
+export default function Chatbot({isOpen,setIsOpen,unique_note_id}) {
     
     const [messages, setMessages] = useState([
         { role: 'assistant', content: "Hi! I'm your AI assistant. I have access to this note; please let me know what questions you have." }
@@ -32,6 +32,7 @@ export default function Chatbot({isOpen,setIsOpen}) {
 
         const userMessage = input.trim();
         setInput('');
+        let current_messages = messages
         setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
         setIsLoading(true);
 
@@ -44,7 +45,7 @@ export default function Chatbot({isOpen,setIsOpen}) {
                 body: JSON.stringify({
                     unique_note_id: unique_note_id,
                     query: userMessage,
-                    past_conversations: []
+                    past_conversations: current_messages
                 })
             });
 
